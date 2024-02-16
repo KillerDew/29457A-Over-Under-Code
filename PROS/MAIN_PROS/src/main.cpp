@@ -63,6 +63,7 @@ lemlib::ChassisController_t angularController{
     5 // slew rate
 };
 lemlib::Chassis lemChassis (drivetrain, lateralController, angularController, odomSensors);
+pros::ADIDigitalOut Wings (DIGITAL_A);
 void initialize() {
 	pros::lcd::initialize();
 	selector::init();
@@ -146,7 +147,9 @@ double IntakeSpeed = 1;
 void opcontrol() {
 	autonomous();
 	Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	Catapult.set_gearing(pros::E_MOTOR_GEARSET_36); 
+	Catapult.set_gearing(pros::E_MOTOR_GEARSET_36);
+	bool BPressed = false;
+	bool Extended = false;
 	while(true) {
 		// Retrieve the necessary joystick values
 		int leftX = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
@@ -173,6 +176,15 @@ void opcontrol() {
 		else{
 			IntakeMotors = 0;
 		}
+		if (!BPressed){
+			if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
+				BPressed = true;
+				Extended = !Extended;
+			}else{
+				BPressed = false;
+			}
+		}
+		Wings.set_value(Extended);
 		pros::delay(20);
 	}
 }
