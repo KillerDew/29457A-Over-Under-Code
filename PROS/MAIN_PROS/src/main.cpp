@@ -115,29 +115,32 @@ double CataSpeed = 0.4;
 void opcontrol() {
 	Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	Catapult.set_gearing(pros::E_MOTOR_GEARSET_36); 
-	while(1) {
-        // Retrieve the necessary joystick values
-        int leftX = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
-        int leftY = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-        
-        // Move the left side of the robot
-        motors_left.move(leftX + leftY);
-        
-        // Move the right side of the robot 
-        motors_right.move(leftX - leftY);
+	while(true) {
+		// Retrieve the necessary joystick values
+		int leftX = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+		int leftY = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		
+		// Move the left side of the robot
+		motors_left.move(leftX + leftY);
+		
+		// Move the right side of the robot 
+		motors_right.move(leftX - leftY);
 
 		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
 			Catapult.move_velocity(-100 * CataSpeed);
-		}else{
+		}
+		else{
 			Catapult = 0;
 		}
 		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
 			IntakeMotors.move(-127);
-		}else if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+		}
+		else if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
 			IntakeMotors.move(127);
-		}else
+		}
+		else{
 			IntakeMotors = 0;
 		}
-        pros::delay(20);
-    }
+		pros::delay(20);
+	}
 }
