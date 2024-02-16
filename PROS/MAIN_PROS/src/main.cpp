@@ -112,6 +112,7 @@ pros::MotorGroup motors_left({18, 19, 20});
 pros::MotorGroup motors_right({8, 9, 10});
 pros::MotorGroup IntakeMotors({-14, 15});
 double CataSpeed = 0.4;
+double IntakeSpeed = 1;
 void opcontrol() {
 	Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	Catapult.set_gearing(pros::E_MOTOR_GEARSET_36); 
@@ -133,10 +134,10 @@ void opcontrol() {
 			Catapult = 0;
 		}
 		if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
-			IntakeMotors.move(-127);
+			IntakeMotors.move(-127 * IntakeSpeed);
 		}
 		else if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
-			IntakeMotors.move(127);
+			IntakeMotors.move(127 * IntakeSpeed);
 		}
 		else{
 			IntakeMotors = 0;
