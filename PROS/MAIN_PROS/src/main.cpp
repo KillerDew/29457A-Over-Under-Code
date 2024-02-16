@@ -114,7 +114,7 @@ pros::MotorGroup IntakeMotors({-14, 15});
 double CataSpeed = 0.4;
 void opcontrol() {
 	Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	Catapult.set_gearing(pros::E_MOTOR_GEARSET_36);
+	Catapult.set_gearing(pros::E_MOTOR_GEARSET_36); 
 	while(1) {
         // Retrieve the necessary joystick values
         int leftX = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
