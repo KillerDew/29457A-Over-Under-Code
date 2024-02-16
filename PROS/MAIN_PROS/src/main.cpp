@@ -1,4 +1,6 @@
 #include "main.h"
+#include "lemlib/api.hpp"
+#include "autoSelect/selection.h"
 
 
 /**
@@ -27,10 +29,43 @@ std::shared_ptr<OdomChassisController> chassis;
 std::shared_ptr<AsyncPositionController<double, double>> IntakeController;
 std::shared_ptr<AsyncVelocityController<double, double>> IntakeController_;
 pros::Controller Master (pros::E_CONTROLLER_MASTER);
+lemlib::Drivetrain_t drivetrain{
+	&motors_left,
+	&motors_right,
+	12,
+	3.25,
+	200
+};
+pros::IMU imu (6);
+lemlib::OdomSensors_t odomSensors{
+	nullptr,
+	nullptr,
+	nullptr,
+	nullptr,
+	&imu
+};
+lemlib::ChassisController_t lateralController{
+	8, //Kp
+	30, //Kd
+	1, // small error range
+	100, // small error timeout
+	3, // large error range
+	500, // large error timeout
+	5 //slew rate
+};
+lemlib::ChassisController_t angularController{
+	8, // kP
+    30, // kD
+    1, // smallErrorRange
+    100, // smallErrorTimeout
+    3, // largeErrorRange
+    500, // largeErrorTimeout
+    5 // slew rate
+};
+lemlib::Chassis lemChassis (drivetrain, lateralController, angularController, odomSensors);
 void initialize() {
 	pros::lcd::initialize();
-	pros::lcd::set_text(1, "??");
-	pros::lcd::register_btn1_cb(on_center_button);
+	selector::init();
 	chassis = 
 		ChassisControllerBuilder()
 			.withMotors(
@@ -85,13 +120,8 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	chassis -> setState({0_in, 0_in, 0_deg});
-	chassis -> setMaxVelocity(50);
-	chassis -> driveToPoint({0_ft, 2_ft});
-	IntakeController_ -> setTarget(-200);
-	chassis -> waitUntilSettled();
-	chassis -> driveToPoint({0_ft, 0_ft});
-	
+	lemChassis.calibrate();
+	lemChassis.moveTo(0, 100, 5, 200);
 }
 
 /**
@@ -114,6 +144,7 @@ pros::MotorGroup IntakeMotors({-14, 15});
 double CataSpeed = 0.4;
 double IntakeSpeed = 1;
 void opcontrol() {
+	autonomous();
 	Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	Catapult.set_gearing(pros::E_MOTOR_GEARSET_36); 
 	while(true) {
