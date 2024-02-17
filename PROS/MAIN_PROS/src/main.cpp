@@ -122,7 +122,12 @@ void competition_initialize() {
  */
 void autonomous() {
 	lemChassis.calibrate();
-	lemChassis.moveTo(0, 100, 5, 200);
+	lemChassis.setPose(0, 0, 0);
+	lemChassis.moveToPoint(0, 50, 5000, true, 127*0.5, true);
+	Catapult.move_velocity(-100);
+	lemChassis.waitUntilDone();
+	Catapult.move(0);
+	lemChassis.moveToPoint(0, 0, 5000, false, 127*.5, false);
 }
 
 /**
