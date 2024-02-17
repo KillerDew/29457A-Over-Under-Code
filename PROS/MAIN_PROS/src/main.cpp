@@ -29,33 +29,38 @@ std::shared_ptr<OdomChassisController> chassis;
 std::shared_ptr<AsyncPositionController<double, double>> IntakeController;
 std::shared_ptr<AsyncVelocityController<double, double>> IntakeController_;
 pros::Controller Master (pros::E_CONTROLLER_MASTER);
-lemlib::Drivetrain_t drivetrain{
-	&motors_left,
-	&motors_right,
-	12,
-	3.25,
-	200
+lemlib::Drivetrain drivetrain{
+	&motors_left, // Left Motors
+	&motors_right, // Rith Motors
+	12, // Track WIdth (in)
+	3.25, // Wheel Diameter (in)
+	333, // Drivetrain RPM
+	3 // Chase power
 };
 pros::IMU imu (6);
-lemlib::OdomSensors_t odomSensors{
+lemlib::OdomSensors odomSensors{
 	nullptr,
 	nullptr,
 	nullptr,
 	nullptr,
 	&imu
 };
-lemlib::ChassisController_t lateralController{
+lemlib::ControllerSettings lateralController{
 	8, //Kp
 	30, //Kd
+	0, //Ki
+	0, // anti Windup
 	1, // small error range
 	100, // small error timeout
 	3, // large error range
 	500, // large error timeout
 	5 //slew rate
 };
-lemlib::ChassisController_t angularController{
+lemlib::ControllerSettings angularController{
 	8, // kP
     30, // kD
+	1, //Ki
+	0,// Anti Windup
     1, // smallErrorRange
     100, // smallErrorTimeout
     3, // largeErrorRange
@@ -117,7 +122,7 @@ void competition_initialize() {
  * for non-competition testing purposes.
  *
  * If the robot is disabled or communications is lost, the autonomous task
- * will be stopped. Re-enabling the robot will restart the task, not re-start it
+ * will be stopped. Re-enabling the robot will restart the task, not restart it
  * from where it left off.
  */
 void autonomous() {
@@ -128,7 +133,8 @@ void autonomous() {
 	lemChassis.waitUntilDone();
 	Catapult.move(0);
 	lemChassis.moveToPoint(0, 0, 5000, false, 127*.5, false);
-}
+	
+}	
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -144,8 +150,8 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 pros::Motor Catapult (7);
-pros::MotorGroup motors_left({18, 19, 20});
-pros::MotorGroup motors_right({8, 9, 10});
+pros::MotorGroup motors_left({pros::Motor (18, pros::E_MOTOR_GEARSET_18), pros::Motor (19, pros::E_MOTOR_GEARSET_18), pros::Motor (20, pros::E_MOTOR_GEARSET_18)});
+pros::MotorGroup motors_right({pros::Motor (8, pros::E_MOTOR_GEARSET_18), pros::Motor (9, pros::E_MOTOR_GEARSET_18), pros::Motor (10, pros::E_MOTOR_GEARSET_18)});
 pros::MotorGroup IntakeMotors({-14, 15});
 double CataSpeed = 0.4;
 double IntakeSpeed = 1;
