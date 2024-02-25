@@ -38,18 +38,13 @@ void on_center_button() {
 pros::Controller Master(pros::E_CONTROLLER_MASTER);
 // Defining Left and Right Drive groups
 pros::MotorGroup LeftDrive(
-    {(18, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES),
-     (19, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES),
-     (20, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES)});
+    {19, 18, 17});
 pros::MotorGroup RightDrive(
-    {(8, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES),
-     (9, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES),
-     (10, pros::E_MOTOR_GEAR_BLUE, false, pros::E_MOTOR_ENCODER_DEGREES)});
+    {9, 8, 7});
 
 // Defining intake motors
 pros::MotorGroup Intake(
-    {(1, pros::E_MOTOR_GEAR_GREEN, true, pros::E_MOTOR_ENCODER_DEGREES),
-     (2, pros::E_MOTOR_GEAR_GREEN, false, pros::E_MOTOR_ENCODER_DEGREES)});
+    {1, 11});
 // Defining Catapult
 pros::Motor Catapult(7, pros::v5::MotorGears::red);
 // Deifining Pneumatics
@@ -57,8 +52,8 @@ pros::adi::DigitalOut Wing(1);
 pros::adi::DigitalOut BalanceMech(2);
 // Defining Speeds:
 double CatapultSpeed = 0.4;
-double TurnSpeed = 0.75;
-double LatDriveSpeed = 0.75;
+double TurnSpeed = 1;
+double LatDriveSpeed = 1;
 double IntakeSpeed = 1;
 
 
@@ -67,7 +62,7 @@ double IntakeSpeed = 1;
 std::shared_ptr<OdomChassisController> chassis = 
 	ChassisControllerBuilder()
 		.withMotors({18, 19, 20},{9, 10, 10})
-		.withDimensions({AbstractMotor::gearset::blue, (36/60)}, {{4_in, 13.6_in}, imev5BlueTPR})
+		.withDimensions({AbstractMotor::gearset::blue, (36.0/60.0)}, {{4_in, 13.6_in}, imev5BlueTPR})
 		.withOdometry()
 		.buildOdometry();
 void initialize() {
@@ -75,6 +70,9 @@ void initialize() {
   pros::lcd::set_text(1, "Hello PROS User!");
 
   pros::lcd::register_btn1_cb(on_center_button);
+  LeftDrive.set_gearing_all(pros::E_MOTOR_GEARSET_06);
+  RightDrive.set_gearing_all(pros::E_MOTOR_GEARSET_06);
+  Intake.set_reversed(true, 0);
 }
 
 /**
@@ -131,8 +129,8 @@ void opcontrol() {
   bool Balance = false;
   while (true) {
     DriveCommands DCs;
-    double Y = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127;
-    double X = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X) / 127;
+    double Y = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127.0;
+    double X = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X) / 127.0;
     DCs = CurvatureDrive(Y, X, TurnSpeed, LatDriveSpeed);
     LeftDrive.move(DCs.left * 127);
     RightDrive.move(DCs.right * 127);
