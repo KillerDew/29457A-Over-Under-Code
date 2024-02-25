@@ -9,6 +9,7 @@
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
+#include "pros/rtos.hpp"
 #include <memory>
 
 /**
@@ -38,7 +39,7 @@ void on_center_button() {
 pros::Controller Master(pros::E_CONTROLLER_MASTER);
 // Defining Left and Right Drive groups
 pros::MotorGroup LeftDrive(
-    {19, 18, 17});
+    {-19, -18, -17});
 pros::MotorGroup RightDrive(
     {9, 8, 7});
 
@@ -46,23 +47,26 @@ pros::MotorGroup RightDrive(
 pros::MotorGroup Intake(
     {1, 11});
 // Defining Catapult
-pros::Motor Catapult(7, pros::v5::MotorGears::red);
+pros::Motor Catapult(-20, pros::v5::MotorGears::red);
 // Deifining Pneumatics
 pros::adi::DigitalOut Wing(1);
 pros::adi::DigitalOut BalanceMech(2);
 // Defining Speeds:
-double CatapultSpeed = 0.4;
-double TurnSpeed = 1;
+double CatapultSpeed = 0.7;
+double TurnSpeed = .8;
 double LatDriveSpeed = 1;
 double IntakeSpeed = 1;
+// Deadzones
+double TurnDeadzone = 0.05;
+double DriveDeadzone = 0.05;
 
 
 
 // Autonomous Definitions:
 std::shared_ptr<OdomChassisController> chassis = 
 	ChassisControllerBuilder()
-		.withMotors({18, 19, 20},{9, 10, 10})
-		.withDimensions({AbstractMotor::gearset::blue, (36.0/60.0)}, {{4_in, 13.6_in}, imev5BlueTPR})
+		.withMotors({-17, -18, -19},{7, 8, 9})
+		.withDimensions({AbstractMotor::gearset::blue, (60.0/36.0)}, {{4_in, 13.6_in}, imev5BlueTPR})
 		.withOdometry()
 		.buildOdometry();
 void initialize() {
@@ -105,9 +109,19 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	chassis -> setState({0_in, 0_in, 0_deg});
-	chassis -> driveToPoint({0_ft, 1_ft});
-	chassis -> driveToPoint({0_in, 0_in}, true);
+  chassis->setMaxVelocity(200);
+	chassis -> setState({48_cm, 60_cm, 0_deg});
+	chassis -> driveToPoint({-10.33_cm, 66_cm}, true);
+  return;
+	chassis -> driveToPoint({44_cm, 40_cm});
+  Intake.move(-127);
+  chassis -> driveToPoint({120_cm, 180_cm});
+  chassis -> moveDistance(10_cm);
+  chassis -> turnToPoint({60_cm, 170_cm});
+  Intake.move(127);
+  pros::delay(500);
+  Intake.move(-127);
+  chassis -> driveToPoint({120_cm, 170_cm});
 }
 
 /**
@@ -124,19 +138,21 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+  autonomous();
   Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  Intake.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
   bool WingExtended = false;
   bool Balance = false;
   while (true) {
     DriveCommands DCs;
     double Y = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127.0;
-    double X = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X) / 127.0;
-    DCs = CurvatureDrive(Y, X, TurnSpeed, LatDriveSpeed);
+    double X = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X) / 127.0;
+    DCs = CurvatureDrive(Y, X, TurnSpeed, LatDriveSpeed, TurnDeadzone, DriveDeadzone);
     LeftDrive.move(DCs.left * 127);
     RightDrive.move(DCs.right * 127);
 
     if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-      Catapult.move_velocity(100 * CatapultSpeed);
+      Catapult.move_velocity(200 * CatapultSpeed);
     } else {
       Catapult = 0;
     }

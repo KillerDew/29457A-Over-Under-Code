@@ -11,7 +11,6 @@
 #include "okapi/api/units/QAngle.hpp"
 #include "okapi/api/units/QLength.hpp"
 #include <memory>
-#include <valarray>
 
 namespace okapi {
 class ChassisController {
