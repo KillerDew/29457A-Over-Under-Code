@@ -51,8 +51,8 @@ pros::Motor Catapult(-20, pros::v5::MotorGears::red);
 // Deifining Pneumatics
 pros::adi::DigitalOut Wing(1);
 pros::adi::DigitalOut BalanceMech(2);
-// Defining Speeds:
-double CatapultSpeed = 0.7;
+// Defining Speeds as a decimal value with 1 being 100% percent:
+double CatapultSpeed = 0.4;
 double TurnSpeed = .8;
 double LatDriveSpeed = 1;
 double IntakeSpeed = 1;
@@ -110,8 +110,8 @@ void competition_initialize() {}
  */
 void autonomous() {
   chassis->setMaxVelocity(200);
-	chassis -> setState({48_cm, 60_cm, 0_deg});
-	chassis -> driveToPoint({-10.33_cm, 66_cm}, true);
+	chassis -> setState({60_cm, 60_cm, 00_deg});
+	chassis -> driveToPoint({-110_cm, -10_cm}, true);
   return;
 	chassis -> driveToPoint({44_cm, 40_cm});
   Intake.move(-127);
@@ -152,7 +152,7 @@ void opcontrol() {
     RightDrive.move(DCs.right * 127);
 
     if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-      Catapult.move_velocity(200 * CatapultSpeed);
+      Catapult.move_velocity(100 * CatapultSpeed);
     } else {
       Catapult = 0;
     }
