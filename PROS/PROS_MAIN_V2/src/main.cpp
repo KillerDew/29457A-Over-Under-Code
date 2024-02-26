@@ -110,17 +110,43 @@ void competition_initialize() {}
  * from where it left off.
  **/
 void autonomous() {
-  chassis->setMaxVelocity(1850);
+  chassis->setMaxVelocity(500);
 	chassis -> setState({0_cm, 0_cm, 45_deg});
   Wing.set_value(true);
   pros::delay(80);
-  chassis -> moveDistance(-35_cm);
+  chassis -> moveDistance(-30_cm);
   Wing.set_value(false);
   pros::delay(80);
   chassis -> turnToAngle(0_deg);
   chassis -> moveDistance(-65_cm );
-  chassis -> moveDistance(18_cm);
-  chassis -> turnToAngle(50_deg);
+  chassis -> moveDistance(20_cm);
+  chassis -> turnToAngle(-40_deg);
+  chassis -> moveDistance(-30_cm);
+  chassis -> moveDistance(10_cm);
+  chassis->setMaxVelocity(100);
+  chassis -> turnToAngle(0_deg);
+  chassis -> moveDistance(10_cm);
+  chassis -> turnToAngle(40_deg);
+  chassis->setMaxVelocity(500);  
+  chassis -> moveDistance(65_cm);
+  chassis -> turnToAngle(140_deg);
+  chassis -> moveDistance(50_cm);
+  chassis -> turnToAngle(145_deg);
+  Intake.move( 127);
+  chassis->setMaxVelocity(100);
+  chassis -> moveDistance(25_cm);
+  chassis -> moveDistance(-10_cm);
+  chassis -> turnToAngle(240_deg);
+  pros::delay(80);
+  Intake.move( -127);
+  chassis->setMaxVelocity(100);
+  chassis -> turnToAngle(260_deg);
+  chassis -> moveDistance(30_cm);
+  Intake.move( 127);
+
+
+  
+
   return;
 	chassis -> driveToPoint({44_cm, 40_cm});
   Intake.move(-127);
