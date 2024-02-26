@@ -143,6 +143,7 @@ void opcontrol() {
   Intake.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
   bool WingExtended = false;
   bool Balance = false;
+  double elapsed = 0;
   while (true) {
     DriveCommands DCs;
     double Y = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127.0;
@@ -166,12 +167,25 @@ void opcontrol() {
       Wing.set_value(Balance);
     }
 
-	if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
-		Intake.move_velocity(-200 * IntakeSpeed);
-	}else if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
-		Intake.move_velocity(200 * IntakeSpeed);
-	}else{
-		Intake = 0;
-	}
+    if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+      Intake.move_velocity(-200 * IntakeSpeed);
+    }else if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+      Intake.move_velocity(200 * IntakeSpeed);
+    }else{
+      Intake = 0;
+    }
+    if (DCs.left == 0 && DCs.right ==0){
+      elapsed += 20;
+    }else {
+      elapsed = 0;
+    }
+    if (elapsed > 500){
+      LeftDrive.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+      RightDrive.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+    }else{
+      LeftDrive.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
+      RightDrive.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
+    }
+    pros::delay(20);
   }
 }
