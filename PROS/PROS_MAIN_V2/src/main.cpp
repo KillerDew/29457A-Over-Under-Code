@@ -6,6 +6,7 @@
 #include "okapi/impl/device/motor/motorGroup.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/adi.hpp"
+#include "pros/device.hpp"
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
@@ -107,11 +108,19 @@ void competition_initialize() {}
  * If the robot is disabled or communications is lost, the autonomous task
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
- */
+ **/
 void autonomous() {
-  chassis->setMaxVelocity(200);
-	chassis -> setState({60_cm, 60_cm, 00_deg});
-	chassis -> driveToPoint({-110_cm, -10_cm}, true);
+  chassis->setMaxVelocity(1850);
+	chassis -> setState({0_cm, 0_cm, 45_deg});
+  Wing.set_value(true);
+  pros::delay(80);
+  chassis -> moveDistance(-35_cm);
+  Wing.set_value(false);
+  pros::delay(80);
+  chassis -> turnToAngle(0_deg);
+  chassis -> moveDistance(-65_cm );
+  chassis -> moveDistance(18_cm);
+  chassis -> turnToAngle(50_deg);
   return;
 	chassis -> driveToPoint({44_cm, 40_cm});
   Intake.move(-127);
