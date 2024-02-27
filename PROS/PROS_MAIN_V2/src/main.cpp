@@ -121,28 +121,30 @@ void autonomous() {
   chassis -> moveDistance(-65_cm );
   chassis -> moveDistance(20_cm);
   chassis -> turnToAngle(-40_deg);
-  chassis -> moveDistance(-30_cm);
+  chassis -> moveDistance(-25_cm);
+  chassis -> setState({0_cm, 0_cm, 0_deg});
   chassis -> moveDistance(10_cm);
   chassis->setMaxVelocity(100);
-  chassis -> turnToAngle(0_deg);
+  chassis -> turnToAngle(30_deg);
   chassis -> moveDistance(10_cm);
   chassis -> turnToAngle(40_deg);
   chassis->setMaxVelocity(500);  
   chassis -> moveDistance(65_cm);
   chassis -> turnToAngle(140_deg);
-  chassis -> moveDistance(50_cm);
+  chassis -> moveDistance(90_cm);
   chassis -> turnToAngle(145_deg);
   Intake.move( 127);
   chassis->setMaxVelocity(100);
-  chassis -> moveDistance(25_cm);
+  chassis -> moveDistance(45_cm);
   chassis -> moveDistance(-10_cm);
-  chassis -> turnToAngle(240_deg);
+  chassis -> turnToAngle(280_deg);
   pros::delay(80);
   Intake.move( -127);
   chassis->setMaxVelocity(100);
   chassis -> turnToAngle(260_deg);
-  chassis -> moveDistance(30_cm);
+  chassis -> moveDistance(40_cm);
   Intake.move( 127);
+  chassis -> moveDistance(15_cm);
 
 
   
