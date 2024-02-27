@@ -1,12 +1,15 @@
 #include "main.h"
 #include "okapi/api/chassis/controller/odomChassisController.hpp"
 #include "okapi/api/device/motor/abstractMotor.hpp"
+#include "okapi/api/units/QAngle.hpp"
 #include "okapi/api/util/mathUtil.hpp"
 #include "okapi/impl/chassis/controller/chassisControllerBuilder.hpp"
+#include "okapi/impl/device/rotarysensor/IMU.hpp"
 #include "okapi/impl/device/motor/motorGroup.hpp"
 #include "pros/abstract_motor.hpp"
 #include "pros/adi.hpp"
 #include "pros/device.hpp"
+#include "pros/imu.hpp"
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
@@ -60,6 +63,8 @@ double IntakeSpeed = 1;
 // Deadzones
 double TurnDeadzone = 0.05;
 double DriveDeadzone = 0.05;
+// Calibrating IMU
+okapi::IMU imu (3, okapi::IMUAxes::y);
 
 
 
@@ -73,11 +78,14 @@ std::shared_ptr<OdomChassisController> chassis =
 void initialize() {
   pros::lcd::initialize();
   pros::lcd::set_text(1, "Hello PROS User!");
-
+  
   pros::lcd::register_btn1_cb(on_center_button);
   LeftDrive.set_gearing_all(pros::E_MOTOR_GEARSET_06);
   RightDrive.set_gearing_all(pros::E_MOTOR_GEARSET_06);
   Intake.set_reversed(true, 0);
+  imu.calibrate();
+  pros::delay(1000);
+  imu.reset(40);
 }
 
 /**
@@ -96,7 +104,9 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -122,12 +132,17 @@ void autonomous() {
   chassis -> moveDistance(20_cm);
   chassis -> turnToAngle(-40_deg);
   chassis -> moveDistance(-25_cm);
-  chassis -> setState({0_cm, 0_cm, 0_deg});
+  double heading = imu.get();
+  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
   chassis -> moveDistance(10_cm);
-  chassis->setMaxVelocity(100);
-  chassis -> turnToAngle(30_deg);
+  chassis -> turnToAngle(90_deg);
+  chassis -> moveDistance(40_cm);
+  chassis -> turnToAngle(210_deg);
+  chassis -> moveDistance(65_cm);
+  chassis -> turnToAngle(180_deg);
+  Intake.move( 127);
   chassis -> moveDistance(10_cm);
-  chassis -> turnToAngle(40_deg);
+  return;
   chassis->setMaxVelocity(500);  
   chassis -> moveDistance(65_cm);
   chassis -> turnToAngle(140_deg);
