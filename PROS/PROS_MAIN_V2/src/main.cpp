@@ -86,6 +86,7 @@ void initialize() {
   imu.calibrate();
   pros::delay(1000);
   imu.reset(40);
+
 }
 
 /**
@@ -120,7 +121,7 @@ void competition_initialize() {
  * from where it left off.
  **/
 void autonomous() {
-  chassis->setMaxVelocity(500);
+  chassis->setMaxVelocity(600);
 	chassis -> setState({0_cm, 0_cm, 45_deg});
   Wing.set_value(true);
   pros::delay(80);
@@ -129,20 +130,31 @@ void autonomous() {
   pros::delay(80);
   chassis -> turnToAngle(0_deg);
   chassis -> moveDistance(-65_cm );
-  chassis -> moveDistance(20_cm);
+  chassis -> moveDistance(30_cm);
   chassis -> turnToAngle(-40_deg);
-  chassis -> moveDistance(-25_cm);
+  chassis -> moveDistance(-40_cm);
   double heading = imu.get();
   chassis ->setState({0_ft, 0_ft, QAngle(heading)});
-  chassis -> moveDistance(10_cm);
+  chassis -> moveDistance(30_cm);
+  chassis -> turnToAngle(290_deg);
+  heading = imu.get();
+  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
+  chassis -> moveDistance(70_cm);
+  chassis -> turnToAngle(220_deg);
+  heading = imu.get();
+  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
+  chassis -> moveDistance(45_cm);
   chassis -> turnToAngle(90_deg);
-  chassis -> moveDistance(40_cm);
-  chassis -> turnToAngle(210_deg);
-  chassis -> moveDistance(65_cm);
-  chassis -> turnToAngle(180_deg);
+  heading = imu.get();
+  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
   Intake.move( 127);
-  chassis -> moveDistance(10_cm);
+  chassis -> moveDistance(35_cm);
+  chassis -> turnToAngle(345_deg);
+  heading = imu.get();
+  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
+  Intake.move(-127);
   return;
+  
   chassis->setMaxVelocity(500);  
   chassis -> moveDistance(65_cm);
   chassis -> turnToAngle(140_deg);
