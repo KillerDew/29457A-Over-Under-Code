@@ -86,7 +86,7 @@ void initialize() {
   imu.calibrate();
   pros::delay(1000);
   imu.reset(40);
-  BalanceMech.set_value(true);
+  BalanceMech.set_value(false);
 }
 
 /**
@@ -135,8 +135,13 @@ void autonomous() {
   chassis -> moveDistance(-40_cm);
   double heading = imu.get();
   chassis ->setState({0_ft, 0_ft, QAngle(heading)});
+  chassis -> moveDistance(25_cm);
+  chassis -> turnToAngle(90_deg);
+  chassis -> moveDistance(96_cm);
+  chassis-> turnToAngle(150_deg);
+  Intake = 127;
   chassis -> moveDistance(30_cm);
-  chassis -> turnToAngle(290_deg);
+  return;
   heading = imu.get();
   chassis ->setState({0_ft, 0_ft, QAngle(heading)});
   chassis -> moveDistance(70_cm);
@@ -202,8 +207,7 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  //autonomous();
-  BalanceMech.set_value(true);
+  autonomous();
   Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   Intake.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
   bool WingExtended = false;
@@ -229,7 +233,7 @@ void opcontrol() {
     }
     if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
       Balance = !Balance;
-      BalanceMech.set_value(Balance);
+      BalanceMech.set_value(!Balance);
     }
 
     if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
