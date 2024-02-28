@@ -137,10 +137,14 @@ void autonomous() {
   chassis ->setState({0_ft, 0_ft, QAngle(heading)});
   chassis -> moveDistance(25_cm);
   chassis -> turnToAngle(90_deg);
-  chassis -> moveDistance(96_cm);
-  chassis-> turnToAngle(150_deg);
+  chassis -> moveDistance(87.5_cm);
+  chassis-> turnToAngle(196_deg);
   Intake = 127;
-  chassis -> moveDistance(30_cm);
+  chassis->setMaxVelocity(300);
+  chassis -> moveDistance(49_cm);
+  chassis->setMaxVelocity(600);
+  chassis-> turnToAngle(280_deg);
+  Intake = -127;
   return;
   heading = imu.get();
   chassis ->setState({0_ft, 0_ft, QAngle(heading)});
@@ -177,6 +181,7 @@ void autonomous() {
   chassis -> moveDistance(40_cm);
   Intake.move( 127);
   chassis -> moveDistance(15_cm);
+  chassis -> turnRaw(60);
 
 
   
