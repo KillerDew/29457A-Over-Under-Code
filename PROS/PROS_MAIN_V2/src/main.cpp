@@ -120,82 +120,45 @@ void competition_initialize() {
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  **/
+ bool FarSide = false;
 void autonomous() {
-  chassis->setMaxVelocity(600);
-	chassis -> setState({0_cm, 0_cm, 45_deg});
-  Wing.set_value(true);
-  pros::delay(80);
-  chassis -> moveDistance(-30_cm);
-  Wing.set_value(false);
-  pros::delay(80);
-  chassis -> turnToAngle(0_deg);
-  chassis -> moveDistance(-65_cm );
-  chassis -> moveDistance(30_cm);
-  chassis -> turnToAngle(-40_deg);
-  chassis -> moveDistance(-40_cm);
-  double heading = imu.get();
-  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
-  chassis -> moveDistance(25_cm);
-  chassis -> turnToAngle(90_deg);
-  chassis -> moveDistance(87.5_cm);
-  chassis-> turnToAngle(196_deg);
-  Intake = 127;
-  chassis->setMaxVelocity(300);
-  chassis -> moveDistance(49_cm);
-  chassis->setMaxVelocity(600);
-  chassis-> turnToAngle(280_deg);
-  Intake = -127;
-  return;
-  heading = imu.get();
-  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
-  chassis -> moveDistance(70_cm);
-  chassis -> turnToAngle(220_deg);
-  heading = imu.get();
-  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
-  chassis -> moveDistance(45_cm);
-  chassis -> turnToAngle(90_deg);
-  heading = imu.get();
-  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
-  Intake.move( 127);
-  chassis -> moveDistance(35_cm);
-  chassis -> turnToAngle(345_deg);
-  heading = imu.get();
-  chassis ->setState({0_ft, 0_ft, QAngle(heading)});
-  Intake.move(-127);
-  return;
-  
-  chassis->setMaxVelocity(500);  
-  chassis -> moveDistance(65_cm);
-  chassis -> turnToAngle(140_deg);
-  chassis -> moveDistance(100_cm);
-  chassis -> turnToAngle(145_deg);
-  Intake.move( 127);
-  chassis->setMaxVelocity(100);
-  chassis -> moveDistance(45_cm);
-  chassis -> moveDistance(-10_cm);
-  chassis -> turnToAngle(260_deg);
-  pros::delay(80);
-  Intake.move( -127);
-  chassis->setMaxVelocity(100);
-  chassis -> turnToAngle(260_deg);
-  chassis -> moveDistance(40_cm);
-  Intake.move( 127);
-  chassis -> moveDistance(15_cm);
-  chassis -> turnRaw(60);
+  if (FarSide){
+    chassis->setMaxVelocity(600);
+    chassis -> setState({0_cm, 0_cm, 45_deg});
+    Wing.set_value(true);
+    pros::delay(80);
+    chassis -> moveDistance(-30_cm);
+    Wing.set_value(false);
+    pros::delay(80);
+    chassis -> turnToAngle(0_deg);
+    chassis -> moveDistance(-65_cm );
+    chassis -> moveDistance(30_cm);
+    chassis -> turnToAngle(-40_deg);
+    chassis -> moveDistance(-40_cm);
+    //double heading = imu.get();
+    //chassis ->setState({0_ft, 0_ft, QAngle(heading)});
+    chassis -> moveDistance(25_cm);
+    chassis -> turnToAngle(80_deg);
+    chassis -> moveDistance(87.5_cm);
+    chassis-> turnToAngle(196_deg);
+    Intake = 127;
+    chassis->setMaxVelocity(300);
+    chassis -> moveDistance(55_cm);
+    chassis->setMaxVelocity(600);
+    chassis-> turnToAngle(350_deg);
+    Intake = -127;
+  }     
+  else{
+    chassis-> setState({0_ft, 0_ft, 0_deg});
+    chassis -> setMaxVelocity(600);
+    chassis -> moveDistance(-85_cm);
+    chassis -> turnToAngle(40_deg);
+    chassis->moveDistance(40_cm);
+    chassis->turnToAngle(340_deg);
+    Wing.set_value(true);
+    chassis -> moveDistance(35_cm);
 
-
-  
-
-  return;
-	chassis -> driveToPoint({44_cm, 40_cm});
-  Intake.move(-127);
-  chassis -> driveToPoint({120_cm, 180_cm});
-  chassis -> moveDistance(10_cm);
-  chassis -> turnToPoint({60_cm, 170_cm});
-  Intake.move(127);
-  pros::delay(500);
-  Intake.move(-127);
-  chassis -> driveToPoint({120_cm, 170_cm});
+  }
 }
 
 /**
