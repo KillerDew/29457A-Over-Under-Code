@@ -1,0 +1,26 @@
+off
+1
+2 async
+intake in
+wait for 2
+turn to point 47, 0
+intake out
+wait 0.2
+3 async
+intake in
+wait for 3
+turn to point 47, 0
+intake out
+wait 0.2
+4 async
+intake in
+wait for 4
+turn to 47, 0
+intake out
+wait 0.2
+intake stop
+wings out
+drive to 47, 0
+reverse to 23, -15
+
+
