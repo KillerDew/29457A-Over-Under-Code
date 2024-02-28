@@ -54,7 +54,7 @@ pros::MotorGroup Intake(
 pros::Motor Catapult(-20, pros::v5::MotorGears::red);
 // Deifining Pneumatics
 pros::adi::DigitalOut Wing(1);
-pros::adi::DigitalOut BalanceMech(2);
+pros::adi::DigitalOut BalanceMech('b');
 // Defining Speeds as a decimal value with 1 being 100% percent:
 double CatapultSpeed = 0.4;
 double TurnSpeed = .8;
@@ -86,7 +86,7 @@ void initialize() {
   imu.calibrate();
   pros::delay(1000);
   imu.reset(40);
-
+  BalanceMech.set_value(true);
 }
 
 /**
@@ -202,11 +202,12 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  autonomous();
+  //autonomous();
+  BalanceMech.set_value(true);
   Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   Intake.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
   bool WingExtended = false;
-  bool Balance = false;
+  bool Balance = true;
   double elapsed = 0;
   while (true) {
     DriveCommands DCs;
@@ -226,9 +227,9 @@ void opcontrol() {
       WingExtended = !WingExtended;
       Wing.set_value(WingExtended);
     }
-    if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+    if (Master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
       Balance = !Balance;
-      Wing.set_value(Balance);
+      BalanceMech.set_value(Balance);
     }
 
     if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
