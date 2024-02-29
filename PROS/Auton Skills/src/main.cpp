@@ -122,8 +122,15 @@ void competition_initialize() {
  **/
  bool FarSide = false;
 void autonomous() {
+  Wing.set_value(true);
   chassis -> setState({0_ft, 0_ft, 0_deg});
   chassis -> setMaxVelocity(600);
+  Catapult.move_velocity(100 * CatapultSpeed);
+  pros::delay(40 * 1000);
+  Catapult = 0;
+  Intake = 127;
+  chassis -> moveDistance(900_cm);
+
 }
 
 /**
