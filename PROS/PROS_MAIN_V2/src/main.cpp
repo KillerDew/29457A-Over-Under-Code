@@ -172,20 +172,28 @@ void autonomous() {
 
     // Descore triball--
     Wing.set_value(true);
-    chassis -> turnToAngle(300_deg);
-    Wing.set_value(false);
+    chassis -> turnToAngle(260_deg);
+    chassis -> moveDistance(10_cm);
+    chassis -> moveDistance(-10_cm);
     // --
 
     // Scoring alliance triball
-    chassis -> turnToAngle(310_deg);
-    chassis -> moveDistance(-95_cm);
+    chassis -> turnToAngle(290_deg);
+    chassis -> moveDistance(-30_cm);
+    Wing.set_value(false);
+    pros::delay(100);
+    chassis -> moveDistance(-70_cm);
+    chassis -> moveDistance(10_cm);
+    chassis -> turnToAngle(10_deg);
+    chassis -> moveDistance(-15_cm);
     // --
 
     // --Movement for AWP--
     chassis -> moveDistance(20_cm);
-    chassis-> turnToAngle(310_deg);
-    Wing.set_value(true);
+    chassis-> turnToAngle(300_deg);
     chassis -> moveDistance(50_cm);
+    chassis-> turnToAngle(315_deg);
+
     // --
   }
 }
