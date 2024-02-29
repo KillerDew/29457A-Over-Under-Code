@@ -151,12 +151,15 @@ void autonomous() {
   else{
     chassis-> setState({0_ft, 0_ft, 0_deg});
     chassis -> setMaxVelocity(600);
-    chassis -> moveDistance(-85_cm);
-    chassis -> turnToAngle(40_deg);
-    chassis->moveDistance(40_cm);
-    chassis->turnToAngle(340_deg);
     Wing.set_value(true);
-    chassis -> moveDistance(35_cm);
+    chassis -> turnToAngle(300_deg);
+    Wing.set_value(false);
+    chassis -> turnToAngle(310_deg);
+    chassis -> moveDistance(-95_cm);
+    chassis -> moveDistance(20_cm);
+    chassis-> turnToAngle(310_deg);
+    Wing.set_value(true);
+    chassis -> moveDistance(50_cm);
 
   }
 }
