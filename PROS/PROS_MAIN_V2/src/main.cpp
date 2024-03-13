@@ -1,12 +1,10 @@
 #include "main.h"
 #include "lemlib/chassis/chassis.hpp"
-#include "lemlib/pid.hpp"
 #include "okapi/api/chassis/controller/odomChassisController.hpp"
 #include "okapi/api/device/motor/abstractMotor.hpp"
 #include "okapi/api/units/QAngle.hpp"
 #include "okapi/api/util/mathUtil.hpp"
 #include "okapi/impl/chassis/controller/chassisControllerBuilder.hpp"
-#include "okapi/impl/device/rotarysensor/IMU.hpp"
 #include "okapi/impl/device/motor/motorGroup.hpp"
 #include "pros/adi.hpp"
 #include "pros/imu.hpp"
@@ -168,7 +166,36 @@ void competition_initialize() {
 bool FarSide = false;
 
 void NewAuton(){
-  return; // TODO: Do new auton
+  lemChassis.moveToPoint(0, 0, 5000);
+  lemChassis.moveToPoint(7.105, 26.508, 5000);
+  lemChassis.moveToPoint(23.229, 40.172, 5000);
+  lemChassis.moveToPoint(13.664, 52.743, 5000);
+  lemChassis.moveToPoint(14.484, 63.674, 5000);
+  lemChassis.moveToPoint(13.664, 72.146, 5000);
+  lemChassis.moveToPoint(17.49, 78.158, 5000);
+  lemChassis.moveToPoint(21.043, 88.816, 5000);
+  lemChassis.moveToPoint(18.036, 95.648, 5000);
+  lemChassis.moveToPoint(2.46, 98.381, 5000);
+  lemChassis.moveToPoint(-4.372, 113.411, 5000);
+  lemChassis.moveToPoint(9.838, 118.877, 5000);
+  lemChassis.moveToPoint(25.688, 120.79, 5000);
+  lemChassis.moveToPoint(36.346, 122.156, 5000);
+  lemChassis.moveToPoint(51.65, 121.883, 5000);
+  lemChassis.moveToPoint(80.891, 115.324, 5000);
+  lemChassis.moveToPoint(76.792, 101.66, 5000);
+  lemChassis.moveToPoint(70.506, 91.275, 5000);
+  lemChassis.moveToPoint(61.215, 66.407, 5000);
+  lemChassis.moveToPoint(65.587, 46.458, 5000);
+  lemChassis.moveToPoint(77.065, 23.502, 5000);
+  lemChassis.moveToPoint(76.518, 12.571, 5000);
+  lemChassis.moveToPoint(61.761, 4.646, 5000);
+  lemChassis.moveToPoint(49.737, 3.279, 5000);
+  lemChassis.moveToPoint(31.154, 4.372, 5000);
+  lemChassis.moveToPoint(10.658, 4.372, 5000);
+  lemChassis.moveToPoint(-2.186, 0.273, 5000);
+  lemChassis.moveToPoint(-32.52, 109.312, 5000);
+  lemChassis.moveToPoint(108.219, 57.935, 5000);
+
 }
 
 void autonomous() {
