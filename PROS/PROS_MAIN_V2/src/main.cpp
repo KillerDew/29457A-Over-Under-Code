@@ -1,4 +1,6 @@
 #include "main.h"
+#include "lemlib/chassis/chassis.hpp"
+#include "lemlib/pid.hpp"
 #include "okapi/api/chassis/controller/odomChassisController.hpp"
 #include "okapi/api/device/motor/abstractMotor.hpp"
 #include "okapi/api/units/QAngle.hpp"
@@ -6,15 +8,14 @@
 #include "okapi/impl/chassis/controller/chassisControllerBuilder.hpp"
 #include "okapi/impl/device/rotarysensor/IMU.hpp"
 #include "okapi/impl/device/motor/motorGroup.hpp"
-#include "pros/abstract_motor.hpp"
 #include "pros/adi.hpp"
-#include "pros/device.hpp"
 #include "pros/imu.hpp"
 #include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
 #include <memory>
+#include "lemlib/api.hpp"
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -36,16 +37,16 @@ pros::MotorGroup RightDrive(
 
 // Defining intake motors
 pros::MotorGroup Intake(
-    {1, 11});
+    {-1, 11});
 
 // Defining Catapult
-pros::Motor Catapult(-20, pros::v5::MotorGears::red);
+pros::Motor Catapult(-20, pros::E_MOTOR_GEAR_100);
 
 // --Deifining Pneumatics--:
 // Wing
-pros::adi::DigitalOut Wing(1);
+pros::ADIDigitalOut Wing(1);
 // Balance mechanism
-pros::adi::DigitalOut BalanceMech('b');
+pros::ADIDigitalOut BalanceMech('b');
 //--
 
 // Defining Speeds as a decimal value with 1 being 100% percent:
@@ -59,9 +60,53 @@ double TurnDeadzone = 0.05;
 double DriveDeadzone = 0.05;
 
 // Defining IMU
-okapi::IMU imu (3, okapi::IMUAxes::y);
+pros::Imu imu (3);
 
+enum DriveType{
+  Tank,
+  Arcade,
+  Curvature,
+  RC
+};
+lemlib::Drivetrain Lem_drivetrain{
+  &LeftDrive,
+  &RightDrive,
+  12,
+  3.25,
+  360,
+  5
+};
+lemlib::OdomSensors Lem_Sensors(
+  nullptr,
+  nullptr,
+  nullptr,
+  nullptr,
+  &imu
+);
+lemlib::ControllerSettings Lat_Controller{
+  10, // proportional gain (kP)
+  0, // integral gain (kI)
+  3, // derivative gain (kD)
+  3, // anti windup
+  1, // small error range, in inches
+  100, // small error range timeout, in milliseconds
+  3, // large error range, in inches
+  500, // large error range timeout, in milliseconds
+  20 // maximum acceleration (slew)
+};
+lemlib::ControllerSettings angularController{
+  2, // proportional gain (kP)
+  0, // integral gain (kI)
+  10, // derivative gain (kD)
+  3, // anti windup
+  1, // small error range, in degrees
+  100, // small error range timeout, in milliseconds
+  3, // large error range, in degrees
+  500, // large error range timeout, in milliseconds
+  0 // maximum acceleration (slew)
+};
 
+lemlib::Chassis lemChassis(Lem_drivetrain, Lat_Controller, angularController, Lem_Sensors);
 
 // --Autonomous Definitions--
 // OdomChassisContoller - a built in okapilib class that alllws us to define a drivetrain with builtin odometry for autonomous.
@@ -78,12 +123,10 @@ void initialize() {
   pros::lcd::initialize();
   pros::lcd::set_text(1, "29457A!");
   
-  LeftDrive.set_gearing_all(pros::E_MOTOR_GEARSET_06);
-  RightDrive.set_gearing_all(pros::E_MOTOR_GEARSET_06);
-  Intake.set_reversed(true, 0);
-  imu.calibrate();
+  LeftDrive.set_gearing(pros::E_MOTOR_GEARSET_06);
+  RightDrive.set_gearing(pros::E_MOTOR_GEARSET_06);
   pros::delay(1000);
-  imu.reset(40);
+  lemChassis.calibrate();
   BalanceMech.set_value(false);
 }
 
@@ -121,10 +164,15 @@ void competition_initialize() {
  * from where it left off.
  **/
 
- // FarSide - defines wether we are on far side (offensive, true) or near side (defensive, false)
+// FarSide - defines wether we are on far side (offensive, true) or near side (defensive, false)
 bool FarSide = false;
 
+void NewAuton(){
+  return; // TODO: Do new auton
+}
+
 void autonomous() {
+  NewAuton();
   if (FarSide){
     // Far side auton
     // Setting Chassis 
@@ -211,13 +259,14 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+DriveType DriverType = Curvature;
 void opcontrol() {
   // MUST BE COMMENTED OUT FOR COMPETITION:
   autonomous();
   //--
   // --Setting Brake modes--
   Catapult.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  Intake.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+  Intake.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
   // --
 
   // --efining runtime variables--
@@ -229,17 +278,32 @@ void opcontrol() {
   // Driver control loop
   while (true) {
     // Normally, while true loops are a big no, however, in this case there is a delay at the end of the loop and the competition controller can cancel the task.
-
-    // DCs, custom class that contains left and right motor velocities. (See CheesyDrive.cpp).
+    /*
+      ! DEPRACATED
+    ///DCs, custom class that contains left and right motor velocities. (See CheesyDrive.cpp).
     DriveCommands DCs;
-    // Getting joystick inputs
+    ///Getting joystick inputs
     double Y = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) / 127.0;
     double X = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X) / 127.0;
-    // Using CurvatureDrive function (CheesyDrive.cpp), uses specialised maths to alter how turning affects the robot. Returns DC
+    ///Using CurvatureDrive function (CheesyDrive.cpp), uses specialised maths to alter how turning affects the robot. Returns DC
     DCs = CurvatureDrive(Y, X, TurnSpeed, LatDriveSpeed, TurnDeadzone, DriveDeadzone);
-    // Move left and right motors based on DCs.
+    ///Move left and right motors based on DCs.
     LeftDrive.move(DCs.left * 127);
     RightDrive.move(DCs.right * 127);
+    ! --
+    */
+    int throttleL = Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+    int throttleR = Master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y);
+    int turnL = -Master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X);
+
+    if (DriverType == Arcade){
+      lemChassis.arcade(throttleL, turnL);
+    }else if (DriverType == Tank){
+      lemChassis.tank(throttleL, throttleR);
+    }else if (DriverType == Curvature){
+      lemChassis.curvature(throttleL, turnL);
+    }
+    // TODO: Implement RC (not nescessary)
 
     // If X is held down, run catapult - else stop cata
     if (Master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
@@ -267,19 +331,23 @@ void opcontrol() {
     }else{
       Intake.move_velocity(0);
     }
-    // -- If there is no activity, a timer starts that sets the motors to HOLD after 0.5s, so we are more stable --
+    /*
+    ! DEPRECATED
+    TODO: Fix hold timer
+    /// -- If there is no activity, a timer starts that sets the motors to HOLD after 0.5s, so we are more stable --
     if (DCs.left == 0 && DCs.right ==0){
       elapsed += 20;
     }else {
       elapsed = 0;
     }
+    */
 
     if (elapsed > 500){
-      LeftDrive.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
-      RightDrive.set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+      LeftDrive.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+      RightDrive.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
     }else{
-      LeftDrive.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
-      RightDrive.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
+      LeftDrive.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
+      RightDrive.set_brake_modes(pros::E_MOTOR_BRAKE_COAST);
     }
     // --
     // Delay is CRITICAL for a while true loop to work.
